@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>기안</title>
+<th:block th:replace="fragments/config :: configFragment"></th:block>
+
+<!-- 사용자 css 추가 -->
+<th:block layout:fragment="css">
+
+<!-- include libraries(jQuery, bootstrap) -->
+<link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+
+<!-- include summernote css/js -->
+<link th:href="@{/editor/summernote/summernote.css}" rel="stylesheet">
+
+</th:block>
+
+<!-- 사용자 script 추가 -->
+<th:block layout:fragment="script">
+
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script> 
+
+<script th:src="@{/editor/summernote/summernote.js}"></script>
+
+</th:block>
+
+<script>
+$(function(){
+	$("#apContent").summernote({
+		hegit:300
+	});
+});
+</script>
+</head>
+<body th:align="center">
+<div th:replace="fragments/header :: headerFragment"></div>
+
+<div th:replace="fragments/aside :: asideFragmentApproval"></div>
+
+<!-- //무조건 section 안에서 내용 작성 -->
+<div layout:fragment="content" class="section">
+<!-- 글쓰기 -->
+	<div>
+		<form id="fom1" th:action="@{/user/updateApproval}" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="apNo" th:value="${approval.apNo}">
+			<input type="hidden" name="finalSign" th:value="${approval.finalSign}">
+<!-- 			<input type="hidden" name="apFileno" th:value="${approvalFileList.apFileno}"> -->
+			<table th:align="center" border="1" th:cellpadding="0" th:cellspacing="0">
+				<tr>
+					<td th:text="제목" width="80"></td>
+					<td><input name="apTitle" id="apTitle" type="text" size="50" th:value="${approval.apTitle}"></td>
+				</tr>
+
+				<tr>
+					<td th:text="내용"></td>
+					<td><textarea name="apContent" cols="50" rows="50" id="apContent" th:utext="${approval.apContent}"></textarea></td>
+				</tr>
+
+				<tr>
+					<td>파일</td>
+					<td>
+						<input multiple="multiple" type="file" name="file" id="file"><br>
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="2" align="center">
+					<input type="submit" value="수정" id="submitButton">
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<a th:href="@{/user/selectApprovalListToBe}">목록</a><br>
+</div><!-- //section end -->
+</body>
+</html>

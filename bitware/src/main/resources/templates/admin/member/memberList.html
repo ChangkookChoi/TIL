@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>사원 목록 (관리자)</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script>
+$(document).ready(function() {
+	$("#allCheckBox").click(function(){
+		var chk = $("#allCheckBox").prop("checked");
+		if(chk){
+			$(".checkBox").prop("checked",true);
+		}else{
+			$(".checkBox").prop("checked",false);
+		}
+	});
+	$(".checkBox").click(function(){
+		$("#allCheckBox").prop("checked",false);
+	});
+	$(".deleteBtn").click(function(){
+		var confirm_val = confirm("정말 삭제하시겠습니까?");
+		if(confirm_val){
+			var checkBoxArr = new Array();
+			$("input[class='checkBox']:checked").each(function(){
+				checkBoxArr.push($(this).val());
+			})
+			$.ajax({
+				url:"/admin/deleteMemberCheckBox",
+				type:"post",
+				data:{checkBoxArr:checkBoxArr},
+				success:function(result){
+					alert(result);
+					location.href="/admin/selectMemberList";
+				}
+			});
+		}
+	});
+});
+</script>
+</head>
+<body th:align="center">
+<!-- 검색 시작 -->
+<form th:action="@{/admin/selectMemberList}">
+<table th:align="center" border="1" th:cellpadding="0" th:cellspacing="0" th:width="700">
+<tr>
+    <td align="right">
+        <select name="searchCondition" id="category">
+        	<option value="memName">이름</option>
+        	<option value="memId">사원번호</option>
+        </select>
+        <input name="searchKeyword" id="keyword" type="text">
+        <input type="submit" value="검색">
+    </td>
+</tr>
+</table>
+</form>
+<input type="hidden" id="searchCondition" th:value="${search.searchCondition}">
+<input type="hidden" id="searchKeyword" th:value="${search.searchKeyword}">
+<!-- 검색 종료 -->
+
+
+	<h1>사원 목록</h1>
+	<table th:align="center" border="1" th:cellpadding="0" th:width="700">
+		<tr>
+			<th><input type="checkbox" name="allCheckBox" id="allCheckBox"></th>
+			<th>이름</th>
+			<th>사원번호</th>
+			<th>직급</th>
+			<th>부서</th>
+			<th>팀</th>
+			<th>전화번호</th>
+			<th>내선번호</th>
+			<th>재직현황</th>
+		</tr>
+		<tr th:each="member : ${memberList}">
+			<td><input type="checkbox" name="checkBox" class="checkBox" th:value="${member.memId}"></td>
+			<td><a th:href="@{/admin/updateMemberView(memId=${member.memId})}" th:text="${member.memName}"></a></td>
+			<td th:text="${member.memId}">
+			<td th:text="${member.ranks.ranks}">
+			<td th:text="${member.department?.deptName}">
+			<td th:text="${member.team?.teamName}">
+			<td th:text="${member.memTel}">
+			<td th:text="${member.memOfficeTel}">
+			<td th:text="${member.memStatus}">
+		</tr>
+	</table>
+	<button type="button" class="deleteBtn">삭제</button>
+	<a th:href="@{/admin/insertMemberView}">사원 등록</a>
+	
+<table th:align="center">
+	<tr>
+		<td colspan="5">
+			<span th:if="${page.curBlock > 1 }">
+				<a th:href="@{/admin/selectMemberList(curPage=${page.prevPage},searchCondition=${search.searchCondition},searchKeyword=${search.searchKeyword})}">[이전]</a>
+			</span>
+			<span th:if="${page.curBlock > 1 }">
+				<a th:href="@{/admin/selectMemberList(curPage=1,searchCondition=${search.searchCondition},searchKeyword=${search.searchKeyword})}">1</a>
+			</span>
+			<span th:each="num:${block}">
+				<span th:if="${num==page.curPage }">
+					<a th:href="@{/admin/selectMemberList(curPage=${num},searchCondition=${search.searchCondition},searchKeyword=${search.searchKeyword})}" th:text="${num}" style="color:orange;"></a>
+				</span>
+				<span th:unless="${num==page.curPage }">
+					<a th:href="@{/admin/selectMemberList(curPage=${num},searchCondition=${search.searchCondition},searchKeyword=${search.searchKeyword})}" th:text="${num}"></a>
+				</span>
+			</span>
+			<span th:if="${page.curBlock < page.totBlock }">
+				<a th:href="@{/admin/selectMemberList(curPage=${page.totPage},searchCondition=${search.searchCondition},searchKeyword=${search.searchKeyword})}" th:text="${page.totPage}"></a>
+			</span>
+			<span th:if="${page.curBlock < page.totBlock }">
+				<a th:href="@{/admin/selectMemberList(curPage=${page.nextPage},searchCondition=${search.searchCondition},searchKeyword=${search.searchKeyword})}">[다음]</a>
+			</span>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

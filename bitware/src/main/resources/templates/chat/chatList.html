@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="../js/chat/run.js"></script>
+<style>
+	.tab ul::after{content:'';display:block;clear:both;}
+	.tab ul li{float:left;margin:0 15px;}
+
+	
+	.info.hidden{display:none;}
+</style>
+
+</head>
+<body>
+<div th:fragment="chatFragment" id="chatFragment">
+	<div th:each="lcList : ${lastContentList}" th:if="${sessionName == lcList.receiver}">
+		<div th:text="${lcList.content}"></div>
+	</div>
+	<div class="tab">
+		<ul id="department"></ul>
+	</div>
+	<div class="info">
+		<ul id="memberByDepartment"></ul>
+	</div>
+	<script type="text/javascript">
+
+		$(function(){
+			$(".memberByDept").click(function(){
+				var memId = $(this).attr('value');
+				var url = "/user/chat?memId=" + memId;
+				var name = "chatPopup";
+				var option = "width=1000px, height=300px, resizable=no, location=no, top=300px, left=300px;"
+				window.open(url, name, option);
+				$('#usernameForm').submit();
+				
+			})
+		})
+	</script>
+</div>
+</body>
+</html>
